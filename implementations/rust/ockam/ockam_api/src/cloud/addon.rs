@@ -23,7 +23,7 @@ pub struct Addon {
 #[derive(Encode, Decode, Serialize, Deserialize, Debug)]
 #[rustfmt::skip]
 #[cbor(map)]
-pub struct ConfluentConfig {
+pub struct KafkaConfig {
     #[cfg(feature = "tag")]
     #[serde(skip)]
     #[cbor(n(0))] pub tag: TypeTag<1697996>,
@@ -31,7 +31,7 @@ pub struct ConfluentConfig {
     #[cbor(n(1))] pub bootstrap_server: String,
 }
 
-impl ConfluentConfig {
+impl KafkaConfig {
     pub fn new<S: Into<String>>(bootstrap_server: S) -> Self {
         Self {
             #[cfg(feature = "tag")]
@@ -44,7 +44,7 @@ impl ConfluentConfig {
 #[derive(Encode, Decode, Serialize, Deserialize, Debug, Clone, Eq, PartialEq)]
 #[rustfmt::skip]
 #[cbor(map)]
-pub struct ConfluentConfigResponse {
+pub struct KafkaConfigResponse {
     #[cfg(feature = "tag")]
     #[serde(skip)]
     #[cbor(n(0))] pub tag: TypeTag<6434816>,
@@ -52,7 +52,7 @@ pub struct ConfluentConfigResponse {
     #[cbor(n(1))] pub bootstrap_server: String,
 }
 
-impl ConfluentConfigResponse {
+impl KafkaConfigResponse {
     pub fn new<S: ToString>(bootstrap_server: S) -> Self {
         Self {
             #[cfg(feature = "tag")]
@@ -63,7 +63,7 @@ impl ConfluentConfigResponse {
 }
 
 #[cfg(test)]
-impl quickcheck::Arbitrary for ConfluentConfigResponse {
+impl quickcheck::Arbitrary for KafkaConfigResponse {
     fn arbitrary(g: &mut quickcheck::Gen) -> Self {
         Self {
             #[cfg(feature = "tag")]
@@ -102,7 +102,7 @@ mod node {
     use ockam_core::{self, Result};
     use ockam_node::Context;
 
-    use crate::cloud::addon::{ConfluentConfig, DisableAddon};
+    use crate::cloud::addon::{KafkaConfig, DisableAddon};
     use crate::cloud::project::{InfluxDBTokenLeaseManagerConfig, OktaConfig};
     use crate::cloud::{BareCloudRequestWrapper, CloudRequestWrapper};
     use crate::error::ApiError;
@@ -158,7 +158,7 @@ mod node {
                     .await
                 }
                 "confluent" => {
-                    self.configure_addon_impl::<ConfluentConfig>(ctx, dec, project_id, addon_id)
+                    self.configure_addon_impl::<KafkaConfig>(ctx, dec, project_id, addon_id)
                         .await
                 }
                 _ => Err(ApiError::core(format!("Unknown addon: {addon_id}"))),

@@ -18,16 +18,16 @@ use crate::util::api::CloudOpts;
 use crate::util::{api, node_rpc, Rpc};
 use crate::{docs, fmt_ok, CommandGlobalOpts};
 
-const LONG_ABOUT: &str = include_str!("./static/configure_confluent/long_about.txt");
-const AFTER_LONG_HELP: &str = include_str!("./static/configure_confluent/after_long_help.txt");
+const LONG_ABOUT: &str = include_str!("./static/configure_instaclustr/long_about.txt");
+const AFTER_LONG_HELP: &str = include_str!("./static/configure_instaclustr/after_long_help.txt");
 
-/// Configure the Confluent Cloud addon for a project
+/// Configure the Instaclustr (Kafka) addon for a project
 #[derive(Clone, Debug, Args)]
 #[command(
 long_about = docs::about(LONG_ABOUT),
 after_long_help = docs::after_help(AFTER_LONG_HELP),
 )]
-pub struct AddonConfigureConfluentSubcommand {
+pub struct AddonConfigureInstaclustrSubcommand {
     /// Ockam project name
     #[arg(
         long = "project",
@@ -48,7 +48,7 @@ pub struct AddonConfigureConfluentSubcommand {
     bootstrap_server: String,
 }
 
-impl AddonConfigureConfluentSubcommand {
+impl AddonConfigureInstaclustrSubcommand {
   pub fn run(self, opts: CommandGlobalOpts) {
     node_rpc(run_impl, (opts, self));
   }
@@ -56,10 +56,10 @@ impl AddonConfigureConfluentSubcommand {
 
 async fn run_impl(
   ctx: Context,
-  (opts, cmd): (CommandGlobalOpts, AddonConfigureConfluentSubcommand),
+  (opts, cmd): (CommandGlobalOpts, AddonConfigureInstaclustrSubcommand),
 ) -> miette::Result<()> {
   let controller_route = &CloudOpts::route();
-  let AddonConfigureConfluentSubcommand {
+  let AddonConfigureInstaclustrSubcommand {
       project_name,
       bootstrap_server,
   } = cmd;
@@ -86,7 +86,7 @@ async fn run_impl(
   check_project_readiness(&ctx, &opts, rpc.node_name(), None, project).await?;
 
   opts.terminal
-      .write_line(&fmt_ok!("Confluent addon configured successfully"))?;
+      .write_line(&fmt_ok!("Instaclustr (Kafka) addon configured successfully"))?;
 
   delete_embedded_node(&opts, rpc.node_name()).await;
   Ok(())

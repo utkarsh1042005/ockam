@@ -1,4 +1,8 @@
+mod configure_kafka;
 mod configure_confluent;
+mod configure_aiven;
+mod configure_instaclustr;
+mod configure_redpanda;
 mod configure_influxdb;
 mod configure_okta;
 mod disable;
@@ -12,7 +16,11 @@ use miette::Context as _;
 use ockam_api::cli_state::{CliState, StateDirTrait, StateItemTrait};
 use ockam_api::cloud::addon::Addon;
 
+use crate::project::addon::configure_kafka::AddonConfigureKafkaSubcommand;
 use crate::project::addon::configure_confluent::AddonConfigureConfluentSubcommand;
+use crate::project::addon::configure_aiven::AddonConfigureAivenSubcommand;
+use crate::project::addon::configure_instaclustr::AddonConfigureInstaclustrSubcommand;
+use crate::project::addon::configure_redpanda::AddonConfigureRedpandaSubcommand;
 use crate::project::addon::configure_influxdb::AddonConfigureInfluxdbSubcommand;
 use crate::project::addon::configure_okta::AddonConfigureOktaSubcommand;
 use crate::project::addon::disable::AddonDisableSubcommand;
@@ -56,6 +64,10 @@ pub enum ConfigureAddonCommand {
     Okta(AddonConfigureOktaSubcommand),
     Influxdb(AddonConfigureInfluxdbSubcommand),
     Confluent(AddonConfigureConfluentSubcommand),
+    InstaclustrKafka(AddonConfigureInstaclustrSubcommand),
+    AivenKafka(AddonConfigureAivenSubcommand),
+    Redpanda(AddonConfigureRedpandaSubcommand),
+    Kafka(AddonConfigureKafkaSubcommand),
 }
 
 impl ConfigureAddonCommand {
@@ -64,6 +76,10 @@ impl ConfigureAddonCommand {
             ConfigureAddonCommand::Okta(cmd) => cmd.run(opts),
             ConfigureAddonCommand::Influxdb(cmd) => cmd.run(opts),
             ConfigureAddonCommand::Confluent(cmd) => cmd.run(opts),
+            ConfigureAddonCommand::InstaclustrKafka(cmd) => cmd.run(opts),
+            ConfigureAddonCommand::AivenKafka(cmd) => cmd.run(opts),
+            ConfigureAddonCommand::Redpanda(cmd) => cmd.run(opts),
+            ConfigureAddonCommand::Kafka(cmd) => cmd.run(opts),
         }
     }
 }
