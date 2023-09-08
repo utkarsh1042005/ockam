@@ -49,45 +49,45 @@ pub struct AddonConfigureRedpandaSubcommand {
 }
 
 impl AddonConfigureRedpandaSubcommand {
-  pub fn run(self, opts: CommandGlobalOpts) {
-    node_rpc(run_impl, (opts, self));
-  }
+    pub fn run(self, opts: CommandGlobalOpts) {
+        node_rpc(run_impl, (opts, self));
+    }
 }
 
 async fn run_impl(
-  ctx: Context,
-  (opts, cmd): (CommandGlobalOpts, AddonConfigureRedpandaSubcommand),
+    ctx: Context,
+    (opts, cmd): (CommandGlobalOpts, AddonConfigureRedpandaSubcommand),
 ) -> miette::Result<()> {
-  let controller_route = &CloudOpts::route();
-  let AddonConfigureRedpandaSubcommand {
-      project_name,
-      bootstrap_server,
-  } = cmd;
+    let controller_route = &CloudOpts::route();
+    let AddonConfigureRedpandaSubcommand {
+        project_name,
+        bootstrap_server,
+    } = cmd;
 
-  let mut rpc = Rpc::embedded(&ctx, &opts).await?;
-  let body = KafkaConfig::new(bootstrap_server);
-  let addon_id = "confluent";
-  let endpoint = format!(
-      "{}/{}",
-      configure_addon_endpoint(&opts.state, &project_name)?,
-      addon_id
-  );
-  let req = Request::post(endpoint).body(CloudRequestWrapper::new(body, controller_route, None));
-  let response: CreateOperationResponse = rpc.ask(req).await?;
-  let operation_id = response.operation_id;
+    let mut rpc = Rpc::embedded(&ctx, &opts).await?;
+    let body = KafkaConfig::new(bootstrap_server);
+    let addon_id = "confluent";
+    let endpoint = format!(
+        "{}/{}",
+        configure_addon_endpoint(&opts.state, &project_name)?,
+        addon_id
+    );
+    let req = Request::post(endpoint).body(CloudRequestWrapper::new(body, controller_route, None));
+    let response: CreateOperationResponse = rpc.ask(req).await?;
+    let operation_id = response.operation_id;
 
-  check_for_completion(&ctx, &opts, rpc.node_name(), &operation_id).await?;
+    check_for_completion(&ctx, &opts, rpc.node_name(), &operation_id).await?;
 
-  let project_id = opts.state.projects.get(&project_name)?.config().id.clone();
-  let mut rpc = rpc.clone();
-  let project: Project = rpc
-      .ask(api::project::show(&project_id, controller_route))
-      .await?;
-  check_project_readiness(&ctx, &opts, rpc.node_name(), None, project).await?;
+    let project_id = opts.state.projects.get(&project_name)?.config().id.clone();
+    let mut rpc = rpc.clone();
+    let project: Project = rpc
+        .ask(api::project::show(&project_id, controller_route))
+        .await?;
+    check_project_readiness(&ctx, &opts, rpc.node_name(), None, project).await?;
 
-  opts.terminal
-      .write_line(&fmt_ok!("Redpanda addon configured successfully"))?;
+    opts.terminal
+        .write_line(&fmt_ok!("Redpanda addon configured successfully"))?;
 
-  delete_embedded_node(&opts, rpc.node_name()).await;
-  Ok(())
+    delete_embedded_node(&opts, rpc.node_name()).await;
+    Ok(())
 }

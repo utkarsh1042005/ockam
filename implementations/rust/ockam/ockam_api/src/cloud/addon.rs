@@ -102,7 +102,7 @@ mod node {
     use ockam_core::{self, Result};
     use ockam_node::Context;
 
-    use crate::cloud::addon::{KafkaConfig, DisableAddon};
+    use crate::cloud::addon::{DisableAddon, KafkaConfig};
     use crate::cloud::project::{InfluxDBTokenLeaseManagerConfig, OktaConfig};
     use crate::cloud::{BareCloudRequestWrapper, CloudRequestWrapper};
     use crate::error::ApiError;

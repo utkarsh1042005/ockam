@@ -1,10 +1,10 @@
-mod configure_kafka;
-mod configure_confluent;
 mod configure_aiven;
-mod configure_instaclustr;
-mod configure_redpanda;
+mod configure_confluent;
 mod configure_influxdb;
+mod configure_instaclustr;
+mod configure_kafka;
 mod configure_okta;
+mod configure_redpanda;
 mod disable;
 mod list;
 
@@ -16,13 +16,13 @@ use miette::Context as _;
 use ockam_api::cli_state::{CliState, StateDirTrait, StateItemTrait};
 use ockam_api::cloud::addon::Addon;
 
-use crate::project::addon::configure_kafka::AddonConfigureKafkaSubcommand;
-use crate::project::addon::configure_confluent::AddonConfigureConfluentSubcommand;
 use crate::project::addon::configure_aiven::AddonConfigureAivenSubcommand;
-use crate::project::addon::configure_instaclustr::AddonConfigureInstaclustrSubcommand;
-use crate::project::addon::configure_redpanda::AddonConfigureRedpandaSubcommand;
+use crate::project::addon::configure_confluent::AddonConfigureConfluentSubcommand;
 use crate::project::addon::configure_influxdb::AddonConfigureInfluxdbSubcommand;
+use crate::project::addon::configure_instaclustr::AddonConfigureInstaclustrSubcommand;
+use crate::project::addon::configure_kafka::AddonConfigureKafkaSubcommand;
 use crate::project::addon::configure_okta::AddonConfigureOktaSubcommand;
+use crate::project::addon::configure_redpanda::AddonConfigureRedpandaSubcommand;
 use crate::project::addon::disable::AddonDisableSubcommand;
 use crate::project::addon::list::AddonListSubcommand;
 
