@@ -1,6 +1,9 @@
 defmodule Test.Services.StaticForwardingTest do
   use ExUnit.Case
 
+  # Fail after 200ms of retrying with time between attempts 10ms
+  use AssertEventually, timeout: 200, interval: 10
+
   alias Ockam.Services.StaticForwarding, as: StaticForwardingService
 
   alias Ockam.Message
@@ -50,6 +53,12 @@ defmodule Test.Services.StaticForwardingTest do
     Router.route(forwarded_message)
 
     assert_receive(%Message{payload: "hello", onward_route: [^test_address, "smth"]}, 5_000)
+
+    [{forwarder_address, %{service: :relay, target_identifier: nil, created_at: _}}] =
+      StaticForwardingService.list_running_relays()
+
+    Ockam.Node.stop(forwarder_address)
+    assert_eventually([] = StaticForwardingService.list_running_relays())
   end
 
   test "forwarding route override" do
@@ -86,6 +95,11 @@ defmodule Test.Services.StaticForwardingTest do
       5_000
     )
 
+    [{forwarder_address, %{service: :relay, created_at: t1, updated_at: t2}}] =
+      StaticForwardingService.list_running_relays()
+
+    assert t1 == t2
+
     {:ok, test_address2} = Node.register_random_address()
 
     register_message2 = %Message{
@@ -103,6 +117,15 @@ defmodule Test.Services.StaticForwardingTest do
         return_route: [^forwarder_address]
       },
       5_000
+    )
+
+    assert_eventually(
+      (
+        [{forwarder_address, %{service: :relay, created_at: ^t1, updated_at: t3}}] =
+          StaticForwardingService.list_running_relays()
+
+        :lt == DateTime.compare(t1, t3)
+      )
     )
 
     forwarded_message = %Message{

@@ -221,6 +221,12 @@ defmodule Ockam.Services.Authorization.Tests do
       5_000
     )
 
+    on_exit(fn ->
+      Ockam.Node.stop(service)
+      Ockam.Node.stop(forwarder_address)
+      Ockam.Node.unregister_address(test_address)
+    end)
+
     local_message = %Message{
       onward_route: [forwarder_address, "smth"],
       payload: "hello",

@@ -213,7 +213,8 @@ defmodule Ockam.Worker do
   end
 
   def handle_post_init(module, options) do
-    Node.set_address_module(Keyword.fetch!(options, :address), module)
+    attributes = Keyword.get(options, :registry_metadata_attributes, %{})
+    Node.update_address_metadata(Keyword.fetch!(options, :address), fn _ -> %{module: module, attributes: attributes} end)
 
     return_value =
       with_init_metric(module, options, fn ->
